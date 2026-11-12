@@ -35,7 +35,7 @@
 | **Flat Naive Schedule** | $\text{schedule}_h = \text{mean}(P_{90})$ | ₹581.84 Cr | ₹5,818,422,547.34 | Baseline (0.0%) |
 
 ### Net Savings
-- **Absolute Rupee Saving (P90 vs Flat)**: **₹48,45,37,812.34 (₹48.45 Crore)**
+- **Absolute Rupee Saving (P90 vs Flat)**: **₹48.45 Crore (₹484,537,812.34)**
 - **Relative Percentage Saving**: **8.33%**
 - **Net Annualized Potential**: Across all 12 test months, dynamic P90 scheduling delivers **₹165.21 Crore** in net cumulative procurement savings over naive flat procurement.
 

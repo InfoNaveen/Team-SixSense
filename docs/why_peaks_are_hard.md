@@ -1,6 +1,6 @@
 # Why Peaks Are Hard: Empirical Evidence from Delhi DISCOM Demand
 
-Delhi's electricity demand swings dramatically from under 1,500 MW on mild winter nights to over 8,630 MW during scorching summer afternoons. Across our 12-month walk-forward backtest on 2024 data, 84 days exceeded the top-decile training peak threshold of 6,373.6 MW. While our LightGBM model successfully anticipated 79.8% of these peak days (achieving an F1 score of 0.717), a detailed examination of the 17 missed peak days in `results/missed_peaks.csv` and the hour-by-season error heatmap reveals three structural reasons why peak forecasting remains an inherently challenging problem.
+Delhi's electricity demand swings dramatically from under 1,500 MW on mild winter nights to over 8,630 MW during scorching summer afternoons. Across our 12-month walk-forward backtest on 2024 data, 84 days exceeded the top-decile training peak threshold of 6373.6 MW. While our LightGBM model successfully anticipated 79.8% of these peak days (achieving an F1 score of 0.717), a detailed examination of the 17 missed peak days in `results/missed_peaks.csv` and the hour-by-season error heatmap reveals three structural reasons why peak forecasting remains an inherently challenging problem.
 
 ---
 
@@ -11,7 +11,7 @@ Cooling demand in Delhi does not scale linearly with dry-bulb temperature. Below
 Furthermore, the hour-by-season error heatmap demonstrates that the largest forecast errors consistently cluster between 19:00 and 23:00 IST during Summer (MAMJ) and Monsoon (JAS) months. When high temperatures coincide with monsoon humidity surges (relative humidity exceeding 70%), the heat index spikes, preventing natural nighttime cooling. 
 
 **Empirical Evidence from `results/missed_peaks.csv`**:
-- On **2024-07-06**, monsoon humidity pushed actual peak demand to **7,362.5 MW**, whereas the median forecast predicted only **4,897.2 MW** and the P90 predicted **5,901.7 MW**—a massive 1,460.8 MW under-forecast. Remarkably, the predicted peak timing was exact (**hour error = 0 min**), confirming that the model correctly located the evening diurnal peak but underestimated the extreme non-linear severity of the humidity surge.
+- On **2024-07-06**, monsoon humidity pushed actual peak demand to **7,362.5 MW**, whereas the median forecast predicted only **4,897.2 MW** and the P90 predicted **5,901.7 MW**—a 1,460.8 MW under-forecast. Remarkably, the predicted peak timing was exact (**hour error = 0 min**), confirming that the model correctly located the evening diurnal peak but underestimated the extreme non-linear severity of the humidity surge.
 - Similarly, on **2024-05-06**, actual demand hit **7,937.8 MW** while P50 stood at **5,407.4 MW** and P90 at **6,026.4 MW** (**hour error = 60 min**), demonstrating an instantaneous weather ramp that outpaced 24-hour weather lags.
 
 ---
@@ -33,7 +33,7 @@ Because our feature set strictly respects the 09:00 D-1 forecast origin, load la
 
 **Empirical Evidence from `results/missed_peaks.csv`**:
 - On **2024-03-06** (an early-season transition day where temperatures rapidly broke out of winter baselines), actual demand reached an unexpected pre-summer peak of **7,837.6 MW**. The median forecast predicted **4,422.2 MW**, and the P90 upper bound was **6,308.9 MW**. While the predicted peak hour was once again spot-on (**hour error = 0 min**), the multi-day thermal shift overwhelmed static load history.
-- On **2024-01-06**, a severe winter cold wave triggered intense early-morning space heating demand, creating a winter peak of **7,760.6 MW** compared to a P50 prediction of **4,020.6 MW** and a P90 of **5,113.8 MW** (**hour error = 1,380 min**), demonstrating that heating-driven thermal shocks in winter exhibit inverted timing from summer evening peaks.
+- On **2024-01-06**, winter heating demand created a winter peak of **7,760.6 MW** compared to a P50 prediction of **4,020.6 MW** and a P90 of **5,113.8 MW** (**hour error = 1,380 min**), demonstrating that heating-driven thermal shocks in winter exhibit inverted timing from summer evening peaks.
 
 ---
 

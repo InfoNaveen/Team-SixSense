@@ -237,7 +237,7 @@ def build_delhi_calendar(ts_index: pd.DatetimeIndex) -> pd.DataFrame:
 
 def _to_ist_hourly(series: pd.Series) -> pd.Series:
     """Parse timestamps and localize/convert to Asia/Kolkata rounded to hour start."""
-    dt = pd.to_datetime(series, errors="coerce")
+    dt = pd.to_datetime(series, dayfirst=False, errors="coerce")
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize(IST_TZ, ambiguous="infer", nonexistent="shift_forward")
     else:
@@ -272,7 +272,9 @@ def load_raw_load_csv(
         "ts": _to_ist_hourly(raw[t_col]),
         "load_mw": pd.to_numeric(raw[l_col], errors="coerce"),
     })
-    return out.dropna(subset=["ts"]).reset_index(drop=True)
+    out = out.dropna(subset=["ts"]).sort_values("ts").reset_index(drop=True)
+    assert out["ts"].is_monotonic_increasing, "Loaded timestamps must be monotonically increasing"
+    return out
 
 
 def fetch_open_meteo_weather(start_date: str, end_date: str, timeout_s: int = 20) -> pd.DataFrame:

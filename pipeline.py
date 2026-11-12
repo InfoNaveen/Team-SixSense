@@ -85,8 +85,9 @@ def load_and_clean_raw(data_dir: str | Path) -> pd.DataFrame:
     temp_col = "temp" if "temp" in df_raw.columns else "temperature"
     rh_col = "rhum" if "rhum" in df_raw.columns else "humidity"
 
-    df_raw["ts"] = pd.to_datetime(df_raw[time_col], errors="coerce")
+    df_raw["ts"] = pd.to_datetime(df_raw[time_col], dayfirst=False, errors="coerce")
     df_raw = df_raw.dropna(subset=["ts"]).sort_values("ts").reset_index(drop=True)
+    assert df_raw["ts"].is_monotonic_increasing, "Raw timestamps must be monotonically increasing"
 
     # Resample from 5-minute to hourly (Contract 1 requirements)
     df_raw.set_index("ts", inplace=True)
@@ -121,6 +122,7 @@ def load_and_clean_raw(data_dir: str | Path) -> pd.DataFrame:
 
     # Reset index so ts is a regular column
     hourly = hourly.reset_index()
+    assert hourly["ts"].is_monotonic_increasing, "Hourly timestamps must be monotonically increasing"
 
     # Calendar and holiday flags
     try:
@@ -258,13 +260,14 @@ def get_walk_forward_folds(df: pd.DataFrame, n_folds: int = 12) -> List[Dict[str
 # 4. MODELS & BASELINES
 # ==============================================================================
 
-def run_seasonal_naive(train_df: pd.DataFrame, test_df: pd.DataFrame) -> pd.DataFrame:
-    """Seasonal naive: same hour, same weekday of previous week (t - 168h)."""
+def run_seasonal_naive(train_df: pd.DataFrame, test_df: pd.DataFrame, horizon: str = "day") -> pd.DataFrame:
+    """Seasonal naive: same hour, same weekday of previous week (t - 168h for day-ahead, t - 336h for week-ahead)."""
+    lag = 168 if horizon == "day" else 336
     combined = pd.concat([train_df, test_df]).sort_values("ts")
-    preds = combined["actual"].shift(168).loc[test_df.index].ffill().bfill()
+    preds = combined["actual"].shift(lag).loc[test_df.index].ffill().bfill()
 
     train_actual = train_df["actual"].values
-    train_naive = train_df["actual"].shift(168).ffill().bfill().values
+    train_naive = train_df["actual"].shift(lag).ffill().bfill().values
     residual_std = float(np.nanstd(train_actual - train_naive))
     if math.isnan(residual_std) or residual_std == 0:
         residual_std = 300.0
@@ -592,7 +595,7 @@ def main():
             ts_test = feat_df.loc[test_idx, "ts"].values
 
             # Model 1: Seasonal Naive Baseline
-            res_naive = run_seasonal_naive(feat_df.loc[train_idx], feat_df.loc[test_idx])
+            res_naive = run_seasonal_naive(feat_df.loc[train_idx], feat_df.loc[test_idx], horizon=horizon)
             for i, idx in enumerate(test_idx):
                 entry = {
                     "ts": ts_test[i],

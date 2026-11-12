@@ -1,6 +1,6 @@
 # Model Card — Probabilistic Peak-Aware Load Forecasting
 
-> CodeSpark 2026 · Delhi DISCOM Load Forecasting & Procurement Copilot
+> CodeSpark 2026 — Delhi DISCOM Load Forecasting & Procurement Copilot
 
 ---
 
@@ -14,7 +14,7 @@
 | Output | Hourly P10, P50, P90 demand forecasts (MW) with quantile crossing resolution |
 | Horizons | Day-ahead (24 h) & Week-ahead (168 h) from 00:00 IST |
 | Forecast origin | Strictly 09:00 IST on D-1 |
-| Peak classifier | Top-decile daily peak classifier ($>6,373.6$ MW training threshold) with peak-hour predictor |
+| Peak classifier | Top-decile daily peak classifier (>6373.6 MW training threshold) with peak-hour predictor |
 | Training objective | Pinball (quantile) loss at each $\alpha$ |
 
 ---
@@ -78,10 +78,10 @@ All features strictly observe the **09:00 D-1 forecast origin**. No features use
 |---------|-------|----------|-----------|-------------|-------------|-------------|
 | **Day-Ahead** | **`lgbm_quantile`** | **16.93%** | **964.70 MW** | 189.63 | 330.42 | 173.46 |
 | Day-Ahead | `linear_regression` | 18.34% | 968.33 MW | 177.96 | 353.97 | 187.27 |
-| Day-Ahead | `seasonal_naive` | 28.59% | 1,574.86 MW | 304.92 | 563.33 | 300.82 |
-| **Week-Ahead** | **`lgbm_quantile`** | **21.48%** | **1,214.85 MW** | 205.82 | 421.72 | 241.41 |
-| Week-Ahead | `linear_regression` | 21.79% | 1,090.43 MW | 189.16 | 417.08 | 214.58 |
-| Week-Ahead | `seasonal_naive` | 28.59% | 1,574.86 MW | 304.92 | 563.33 | 300.82 |
+| Day-Ahead | `seasonal_naive` | 28.59% | 1574.86 MW | 304.92 | 563.33 | 300.81 |
+| **Week-Ahead** | **`lgbm_quantile`** | **21.48%** | **1214.85 MW** | 205.82 | 421.72 | 241.41 |
+| Week-Ahead | `linear_regression` | 21.79% | 1090.43 MW | 189.16 | 417.08 | 214.58 |
+| Week-Ahead | `seasonal_naive` | 32.05% | 1689.56 MW | 317.33 | 641.79 | 323.71 |
 
 ### 6b. Interval Calibration (Nominal Target: 80.0%)
 
@@ -92,7 +92,7 @@ All features strictly observe the **09:00 D-1 forecast origin**. No features use
 
 *Note: Raw quantile regression exhibits empirical under-coverage due to heavy-tailed load swings. Post-hoc conformal calibration shifts the intervals to achieve the exact nominal 80.0% coverage without altering point forecasts.*
 
-### 6c. Peak-Event Classification ($>6,373.6$ MW Threshold)
+### 6c. Peak-Event Classification (>6373.6 MW Threshold)
 
 | Metric | Measured Value |
 |--------|----------------|

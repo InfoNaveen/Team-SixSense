@@ -281,25 +281,26 @@ def seasonal_naive_fit_predict(
     history = pd.concat([train_df, test_df]).sort_index()["actual"]
 
     # --- point forecast ---
+    lag_hours = 336 if str(horizon).lower().startswith("week") else 168
     p50 = []
     for ts in test_df.index:
-        lag168 = ts - pd.Timedelta(hours=168)
-        lag24  = ts - pd.Timedelta(hours=24)
-        if lag168 in history.index:
-            p50.append(history[lag168])
-        elif lag24 in history.index:
-            p50.append(history[lag24])
+        target_lag = ts - pd.Timedelta(hours=lag_hours)
+        fallback_lag = ts - pd.Timedelta(hours=168)
+        if target_lag in history.index:
+            p50.append(history[target_lag])
+        elif fallback_lag in history.index:
+            p50.append(history[fallback_lag])
         else:
             p50.append(np.nan)
     p50 = np.array(p50, dtype=float)
 
-    # --- training residuals (one-week-ahead, in-sample) ---
+    # --- training residuals (horizon-specific, in-sample) ---
     actual_train = train_df["actual"].values
     idx_train    = train_df.index
 
     residuals = []
     for i, ts in enumerate(idx_train):
-        lag = ts - pd.Timedelta(hours=168)
+        lag = ts - pd.Timedelta(hours=lag_hours)
         if lag in train_df.index:
             pred = train_df.loc[lag, "actual"]
             residuals.append(actual_train[i] - pred)
