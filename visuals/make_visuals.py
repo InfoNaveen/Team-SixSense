@@ -38,12 +38,13 @@ RES  = ROOT / "results"
 
 NAVY   = "#12355B"
 BLUE   = "#4682DC"
-BLACK  = "#1A1A1A"
-RED    = "#D62839"
-GREEN  = "#2E8B57"
-GREY   = "#9E9E9E"
-WHITE  = "#FFFFFF"
-LIGHT  = "#F5F7FA"
+BLACK  = "#111827"  # Ink
+RED    = "#D64545"  # Peak Red
+GREEN  = "#2E9E6B"  # Grid Green
+GREY   = "#8A94A6"  # Slate
+AMBER  = "#F2A93B"  # Highlight
+WHITE  = "#FFFFFF"  # Background
+LIGHT  = "#F3F6FA"  # Mist (Surface)
 
 FONT   = "Calibri"
 DPI    = 200
