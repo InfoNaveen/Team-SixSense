@@ -4,17 +4,17 @@ app.py — Delhi DISCOM Load Forecasting & Procurement Copilot Dashboard
 Reads results/ files ONLY. Never imports models/, features/, or data/.
 Runs 100% offline.
 
-Theme: Official Brand Guidelines
+Theme: Premium Modern Light Palette with Harmonious Visual Hierarchy
 - Primary: Deep Navy (#12355B)
-- Forecast: Signal Blue (#4682DC)
-- Band: Blue Tint (#4682DC @ 25% opacity, #D9E6F9)
-- Actual: Ink (#111827)
-- Peak / Risk: Peak Red (#D64545)
-- Saving: Grid Green (#2E9E6B)
-- Baseline: Slate (#8A94A6) / Lighter Slate (#C3CAD6)
-- Highlight: Amber (#F2A93B)
-- Background: White (#FFFFFF)
-- Surface: Mist (#F3F6FA)
+- Forecast: Signal Blue (#2563EB / #4682DC)
+- Band: Luminous Blue Tint (rgba(70, 130, 220, 0.16) with crisp boundary)
+- Actual: Slate Ink (#1E293B)
+- Peak / Risk: Vibrant Coral Red (#DC2626 / #D64545)
+- Saving: Grid Green (#10B981 / #2E9E6B)
+- Baseline: Slate (#64748B / #94A3B8)
+- Highlight: Amber (#F59E0B / #F2A93B)
+- Background: Pure White (#FFFFFF)
+- Surface: Mist (#F8FAFC / #F3F6FA)
 
 Launch:
     streamlit run app.py
@@ -50,34 +50,34 @@ RESULTS_DIR = REPO_ROOT / "results"
 # ==============================================================================
 
 COLOR_PRIMARY = "#12355B"    # Deep Navy
-COLOR_FORECAST = "#4682DC"   # Signal Blue
-COLOR_BAND = "rgba(70, 130, 220, 0.25)"  # Blue Tint (25% opacity)
-COLOR_BAND_HEX = "#D9E6F9"   # Blue Tint on white
-COLOR_ACTUAL = "#111827"     # Ink
-COLOR_PEAK = "#D64545"       # Peak Red
-COLOR_SAVING = "#2E9E6B"     # Grid Green
-COLOR_BASELINE = "#8A94A6"   # Slate
-COLOR_NAIVE = "#C3CAD6"      # Lighter Slate
-COLOR_HIGHLIGHT = "#F2A93B"  # Amber
-COLOR_BG = "#FFFFFF"         # White
-COLOR_SURFACE = "#F3F6FA"    # Mist
+COLOR_FORECAST = "#2563EB"   # Vibrant Signal Blue
+COLOR_BAND_LINE = "rgba(70, 130, 220, 0.70)" # Crisp band boundary
+COLOR_BAND_FILL = "rgba(70, 130, 220, 0.16)" # Luminous ice-blue fill
+COLOR_ACTUAL = "#1E293B"     # Slate Ink (high-contrast, professional)
+COLOR_PEAK = "#DC2626"       # Vibrant Peak Red
+COLOR_SAVING = "#10B981"     # Vibrant Grid Green
+COLOR_BASELINE = "#64748B"   # Slate
+COLOR_NAIVE = "#94A3B8"      # Light Slate
+COLOR_HIGHLIGHT = "#F59E0B"  # Vibrant Amber
+COLOR_BG = "#FFFFFF"         # Pure White
+COLOR_SURFACE = "#F8FAFC"    # Soft Light Mist
 
-# Unified Model Colours (Identical across all charts & tabs)
+# Unified Model Colours across all bar charts
 MODEL_COLORS = {
-    "lgbm_quantile": COLOR_FORECAST,             # Signal Blue
-    "lgbm_quantile_calibrated": COLOR_HIGHLIGHT, # Amber
-    "linear_regression": COLOR_BASELINE,         # Slate
-    "seasonal_naive": COLOR_NAIVE,               # Lighter Slate
+    "lgbm_quantile": "#3B82F6",            # Vibrant Blue
+    "lgbm_quantile_calibrated": "#F59E0B", # Amber Highlight
+    "linear_regression": "#64748B",        # Slate
+    "seasonal_naive": "#94A3B8",           # Light Slate
 }
 
 # Standard Plotly Colorway
 PLOTLY_COLORWAY = [
-    COLOR_FORECAST,   # #4682DC
-    COLOR_HIGHLIGHT,  # #F2A93B
-    COLOR_BASELINE,   # #8A94A6
-    COLOR_NAIVE,      # #C3CAD6
-    COLOR_PEAK,       # #D64545
-    COLOR_SAVING,     # #2E9E6B
+    "#3B82F6",  # Signal Blue
+    "#F59E0B",  # Amber
+    "#64748B",  # Slate
+    "#94A3B8",  # Light Slate
+    "#DC2626",  # Peak Red
+    "#10B981",  # Grid Green
 ]
 
 # ==============================================================================
@@ -93,17 +93,11 @@ CUSTOM_BRAND_CSS = f"""
     font-family: Calibri, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }}
 
-/* Typography */
+/* Headings */
 h1, h2, h3, h4, h5, h6, .stHeading {{
     color: {COLOR_PRIMARY} !important;
     font-family: Calibri, Inter, sans-serif !important;
     font-weight: 700 !important;
-}}
-
-h1 {{
-    font-size: 32pt !important;
-    line-height: 1.15 !important;
-    letter-spacing: -0.02em !important;
 }}
 
 /* Sidebar styling */
@@ -118,23 +112,23 @@ section[data-testid="stSidebar"] h3 {{
     color: {COLOR_PRIMARY} !important;
 }}
 
-/* KPI Metric Cards — Mist Surface with Slate Borders */
+/* KPI Metric Cards */
 div[data-testid="stMetric"] {{
     background-color: {COLOR_SURFACE} !important;
     border: 1px solid #E2E8F0 !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     padding: 16px 20px !important;
-    box-shadow: 0 1px 2px rgba(18, 53, 91, 0.04) !important;
+    box-shadow: 0 1px 3px rgba(18, 53, 91, 0.04) !important;
     transition: all 0.2s ease !important;
 }}
 
 div[data-testid="stMetric"]:hover {{
     border-color: {COLOR_FORECAST} !important;
-    box-shadow: 0 4px 8px rgba(70, 130, 220, 0.08) !important;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08) !important;
 }}
 
 div[data-testid="stMetricLabel"] p {{
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
     color: {COLOR_BASELINE} !important;
     text-transform: uppercase !important;
@@ -144,7 +138,7 @@ div[data-testid="stMetricLabel"] p {{
 
 div[data-testid="stMetricValue"] div {{
     font-size: 1.8rem !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     color: {COLOR_PRIMARY} !important;
 }}
 
@@ -158,7 +152,7 @@ div[data-testid="stMetricDelta"] {{
     gap: 8px !important;
     background-color: transparent !important;
     border-bottom: 2px solid #E2E8F0 !important;
-    padding-bottom: 2px !important;
+    padding-bottom: 4px !important;
 }}
 
 .stTabs [data-baseweb="tab"] {{
@@ -196,18 +190,18 @@ div[data-testid="stMetricDelta"] {{
 
 .badge-tag {{
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }}
 
-.badge-navy {{ background-color: {COLOR_PRIMARY}; color: {COLOR_BG}; }}
-.badge-blue {{ background-color: {COLOR_BAND_HEX}; color: {COLOR_FORECAST}; }}
-.badge-green {{ background-color: #E8F5E9; color: {COLOR_SAVING}; }}
-.badge-amber {{ background-color: #FFF3E0; color: {COLOR_HIGHLIGHT}; }}
+.badge-navy {{ background-color: {COLOR_PRIMARY}; color: #FFFFFF; }}
+.badge-blue {{ background-color: #DBEAFE; color: #1D4ED8; }}
+.badge-green {{ background-color: #D1FAE5; color: #047857; }}
+.badge-amber {{ background-color: #FEF3C7; color: #B45309; }}
 
 /* Big Single Number Class (54pt) */
 .big-number-saving {{
@@ -217,18 +211,11 @@ div[data-testid="stMetricDelta"] {{
     line-height: 1.05;
 }}
 
-.big-number-forecast {{
-    font-size: 54pt;
-    font-weight: 800;
-    color: {COLOR_FORECAST};
-    line-height: 1.05;
-}}
-
 /* Dataframe & Tables Styling */
 div[data-testid="stDataFrame"] {{
     background-color: {COLOR_BG};
     border: 1px solid #E2E8F0;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
 }}
 </style>
@@ -303,7 +290,7 @@ def load_procurement() -> dict[str, Any]:
 
 
 # ==============================================================================
-# TAB 1: FORECAST (Hero Chart with P10–P90 Band and Peak Markers)
+# TAB 1: FORECAST (Crisp Hero Chart with Luminous P10–P90 Band)
 # ==============================================================================
 
 def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str) -> None:
@@ -344,37 +331,37 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
     picp_delta = f"{inside_band - 80.0:+.1f}% vs 80% Target"
     k3.metric("Empirical PICP (P10–P90)", f"{inside_band:.1f}%", picp_delta)
 
-    # Plotly Hero Chart
+    # Plotly Hero Chart — Crisp, Professional Aesthetics
     fig = go.Figure()
 
-    # P90 upper bound boundary
+    # P90 upper bound line (visible boundary)
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["p90"], mode="lines",
-        line=dict(color=COLOR_FORECAST, width=0),
+        line=dict(color=COLOR_BAND_LINE, width=1.2),
         name="P90 Upper Bound", showlegend=False
     ))
 
-    # P10 lower bound boundary with Blue Tint shaded band (#4682DC @ 25% opacity)
+    # P10 lower bound line with luminous translucent Blue Tint fill
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["p10"], mode="lines",
-        line=dict(color=COLOR_FORECAST, width=0),
+        line=dict(color=COLOR_BAND_LINE, width=1.2),
         fill="tonexty",
-        fillcolor=COLOR_BAND,
-        name="P10–P90 Band (Blue Tint)",
+        fillcolor=COLOR_BAND_FILL,
+        name="P10–P90 Confidence Band",
     ))
 
-    # P50 point forecast (Signal Blue dashed line)
+    # P50 point forecast (Vibrant Signal Blue dashed line)
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["p50"], mode="lines",
-        line=dict(color=COLOR_FORECAST, width=2.4, dash="dash"),
-        name="P50 Forecast (Signal Blue)",
+        line=dict(color=COLOR_FORECAST, width=2.6, dash="dash"),
+        name="P50 Expected Forecast",
     ))
 
-    # Actual demand (Ink #111827 solid line)
+    # Actual demand (Slate Ink solid line)
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["actual"], mode="lines",
-        line=dict(color=COLOR_ACTUAL, width=2.2),
-        name="Actual Demand (Ink)",
+        line=dict(color=COLOR_ACTUAL, width=2.4),
+        name="Actual Grid Demand (MW)",
     ))
 
     # Peak markers
@@ -393,8 +380,8 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
             if not merged.empty:
                 fig.add_trace(go.Scatter(
                     x=merged["ts"], y=merged["p90"], mode="markers",
-                    marker=dict(color=COLOR_HIGHLIGHT, size=10, symbol="triangle-up", line=dict(color=COLOR_BG, width=1.5)),
-                    name="Predicted Peak Hour (Amber)",
+                    marker=dict(color=COLOR_HIGHLIGHT, size=11, symbol="triangle-up", line=dict(color="#FFFFFF", width=1.8)),
+                    name="Predicted Peak Hour",
                 ))
 
         actual_peaks = pf[pf["peak_actual"].astype(bool)]
@@ -406,8 +393,8 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
             if not merged_act.empty:
                 fig.add_trace(go.Scatter(
                     x=merged_act["ts"], y=merged_act["actual"], mode="markers",
-                    marker=dict(color=COLOR_PEAK, size=10, symbol="star", line=dict(color=COLOR_BG, width=1.2)),
-                    name="Actual Peak Event (Peak Red)",
+                    marker=dict(color=COLOR_PEAK, size=11, symbol="star", line=dict(color="#FFFFFF", width=1.5)),
+                    name="Actual Peak Event (>90th %ile)",
                 ))
 
     fig.update_layout(
@@ -415,22 +402,22 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
         paper_bgcolor=COLOR_BG,
         plot_bgcolor=COLOR_BG,
         colorway=PLOTLY_COLORWAY,
-        height=460,
+        height=470,
         margin=dict(l=24, r=24, t=36, b=24),
         font=dict(family="Calibri, Inter, sans-serif", color=COLOR_PRIMARY),
         xaxis=dict(
-            title=dict(text="Time (IST)", font=dict(color=COLOR_PRIMARY, size=12)),
+            title=dict(text="Time (IST)", font=dict(color=COLOR_PRIMARY, size=12, family="Calibri, sans-serif")),
             showgrid=True,
-            gridcolor="#EAEFF5",
-            linecolor=COLOR_BASELINE,
-            tickfont=dict(color=COLOR_PRIMARY, size=11),
+            gridcolor="#F1F5F9",
+            linecolor="#CBD5E1",
+            tickfont=dict(color=COLOR_BASELINE, size=11),
         ),
         yaxis=dict(
-            title=dict(text="Demand (MW)", font=dict(color=COLOR_PRIMARY, size=12)),
+            title=dict(text="Demand (MW)", font=dict(color=COLOR_PRIMARY, size=12, family="Calibri, sans-serif")),
             showgrid=True,
-            gridcolor="#EAEFF5",
-            linecolor=COLOR_BASELINE,
-            tickfont=dict(color=COLOR_PRIMARY, size=11),
+            gridcolor="#F1F5F9",
+            linecolor="#CBD5E1",
+            tickfont=dict(color=COLOR_BASELINE, size=11),
         ),
         hovermode="x unified",
         legend=dict(
@@ -440,7 +427,7 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
             xanchor="right",
             x=1,
             bgcolor="rgba(255, 255, 255, 0.95)",
-            bordercolor=COLOR_SURFACE,
+            bordercolor="#E2E8F0",
             borderwidth=1,
             font=dict(size=11, color=COLOR_PRIMARY),
         ),
@@ -449,7 +436,7 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
 
 
 # ==============================================================================
-# TAB 2: ACCURACY VS BASELINES (Strict Model Colors Everywhere)
+# TAB 2: ACCURACY VS BASELINES (Clean Polished Bar Charts)
 # ==============================================================================
 
 def render_accuracy_tab(metrics: pd.DataFrame, horizon: str) -> None:
@@ -464,7 +451,7 @@ def render_accuracy_tab(metrics: pd.DataFrame, horizon: str) -> None:
 
     st.dataframe(pivoted, use_container_width=True)
 
-    # Bar charts comparing MAPE & RMSE using strict brand model colors
+    # Bar charts comparing MAPE & RMSE
     piv_reset = pivoted.reset_index()
     if "MAPE" in piv_reset.columns and "RMSE" in piv_reset.columns:
         c1, c2 = st.columns(2)
@@ -480,21 +467,20 @@ def render_accuracy_tab(metrics: pd.DataFrame, horizon: str) -> None:
             fig_mape.update_traces(
                 texttemplate="%{text:.2f}%",
                 textposition="outside",
-                textfont=dict(color=COLOR_PRIMARY, size=11),
-                marker_line_width=1,
-                marker_line_color=COLOR_SURFACE,
+                textfont=dict(color=COLOR_PRIMARY, size=11, family="Calibri, sans-serif"),
+                marker_line_width=1.2,
+                marker_line_color="#E2E8F0",
             )
             fig_mape.update_layout(
                 template="plotly_white",
                 paper_bgcolor=COLOR_BG,
                 plot_bgcolor=COLOR_BG,
-                colorway=PLOTLY_COLORWAY,
                 showlegend=False,
                 height=340,
                 margin=dict(l=20, r=20, t=40, b=20),
                 font=dict(family="Calibri, Inter, sans-serif", color=COLOR_PRIMARY),
                 xaxis=dict(title="", tickfont=dict(size=11, color=COLOR_PRIMARY)),
-                yaxis=dict(title="MAPE (%)", gridcolor="#EAEFF5", tickfont=dict(color=COLOR_PRIMARY)),
+                yaxis=dict(title="MAPE (%)", gridcolor="#F1F5F9", tickfont=dict(color=COLOR_BASELINE)),
             )
             st.plotly_chart(fig_mape, use_container_width=True)
 
@@ -509,27 +495,26 @@ def render_accuracy_tab(metrics: pd.DataFrame, horizon: str) -> None:
             fig_rmse.update_traces(
                 texttemplate="%{text:.1f}",
                 textposition="outside",
-                textfont=dict(color=COLOR_PRIMARY, size=11),
-                marker_line_width=1,
-                marker_line_color=COLOR_SURFACE,
+                textfont=dict(color=COLOR_PRIMARY, size=11, family="Calibri, sans-serif"),
+                marker_line_width=1.2,
+                marker_line_color="#E2E8F0",
             )
             fig_rmse.update_layout(
                 template="plotly_white",
                 paper_bgcolor=COLOR_BG,
                 plot_bgcolor=COLOR_BG,
-                colorway=PLOTLY_COLORWAY,
                 showlegend=False,
                 height=340,
                 margin=dict(l=20, r=20, t=40, b=20),
                 font=dict(family="Calibri, Inter, sans-serif", color=COLOR_PRIMARY),
                 xaxis=dict(title="", tickfont=dict(size=11, color=COLOR_PRIMARY)),
-                yaxis=dict(title="RMSE (MW)", gridcolor="#EAEFF5", tickfont=dict(color=COLOR_PRIMARY)),
+                yaxis=dict(title="RMSE (MW)", gridcolor="#F1F5F9", tickfont=dict(color=COLOR_BASELINE)),
             )
             st.plotly_chart(fig_rmse, use_container_width=True)
 
 
 # ==============================================================================
-# TAB 3: ERROR HEATMAP (Brand Blue/Navy Gradient)
+# TAB 3: ERROR HEATMAP (Luminous Multi-Stop Ocean Palette)
 # ==============================================================================
 
 def render_heatmap_tab(df: pd.DataFrame) -> None:
@@ -553,18 +538,19 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
         [s for s in season_order if s in f_sub["season"].unique()]
     )
 
-    # Brand sequential gradient: Mist -> Blue Tint -> Signal Blue -> Deep Navy
-    brand_gradient = [
-        [0.0, COLOR_SURFACE],      # #F3F6FA (Mist)
-        [0.35, COLOR_BAND_HEX],     # #D9E6F9 (Blue Tint)
-        [0.70, COLOR_FORECAST],     # #4682DC (Signal Blue)
-        [1.0, COLOR_PRIMARY],       # #12355B (Deep Navy)
+    # Luminous, modern sequential gradient (Ice Cream -> Azure -> Cobalt -> Deep Navy)
+    luminous_ocean_gradient = [
+        [0.0, "#F8FAFC"],
+        [0.2, "#DBEAFE"],
+        [0.5, "#60A5FA"],
+        [0.8, "#2563EB"],
+        [1.0, "#1E3A8A"],
     ]
 
     fig = px.imshow(
         heat,
         labels=dict(x="Hour of Day (IST)", y="Season", color="MAE (MW)"),
-        color_continuous_scale=brand_gradient,
+        color_continuous_scale=luminous_ocean_gradient,
         aspect="auto",
     )
     fig.update_layout(
@@ -578,7 +564,7 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
             tickmode="linear",
             tick0=0,
             dtick=2,
-            gridcolor=COLOR_SURFACE,
+            gridcolor="#F8FAFC",
             tickfont=dict(color=COLOR_PRIMARY, size=11),
         ),
         yaxis=dict(
@@ -586,14 +572,14 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
         ),
         coloraxis_colorbar=dict(
             title=dict(text="MAE (MW)", font=dict(size=11, color=COLOR_PRIMARY)),
-            tickfont=dict(size=10, color=COLOR_PRIMARY),
+            tickfont=dict(size=10, color=COLOR_BASELINE),
         ),
     )
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown(
         f"""
-        <div style="background-color: {COLOR_SURFACE}; border-left: 4px solid {COLOR_FORECAST}; padding: 14px 20px; border-radius: 6px; font-size: 13px; color: {COLOR_PRIMARY};">
+        <div style="background-color: {COLOR_SURFACE}; border-left: 4px solid {COLOR_FORECAST}; padding: 14px 20px; border-radius: 8px; font-size: 13px; color: {COLOR_PRIMARY};">
             <b>Operational Pattern:</b> Error peaks visibly cluster in Summer (MAMJ) evening hours (19:00 – 23:00 IST) when non-linear air-conditioning loads surge during nocturnal heat buildup.
         </div>
         """,
@@ -602,7 +588,7 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
 
 
 # ==============================================================================
-# TAB 4: MISSED PEAKS (Peak Red Warnings)
+# TAB 4: MISSED PEAKS (Diagnostic View with Clear Coral/Red Surge Band)
 # ==============================================================================
 
 def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
@@ -611,7 +597,7 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
         st.success("No peak events were missed by the P90 threshold detector!")
         return
 
-    st.markdown(f"**Days where actual demand exceeded top-decile threshold without P90 peak detection (<span style='color: {COLOR_PEAK};'>Peak Red</span>):**", unsafe_allow_html=True)
+    st.markdown(f"**Days where actual demand exceeded top-decile threshold without P90 peak detection:**")
     st.dataframe(missed, use_container_width=True, hide_index=True)
 
     dates = missed["date"].astype(str).tolist()
@@ -626,7 +612,7 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
 
     st.markdown(
         f"""
-        <div style="background-color: #FDF2F2; border-left: 4px solid {COLOR_PEAK}; padding: 14px 20px; border-radius: 6px; font-size: 13px; color: #9B1C1C; margin: 16px 0;">
+        <div style="background-color: #FEF2F2; border-left: 4px solid {COLOR_PEAK}; padding: 14px 20px; border-radius: 8px; font-size: 13px; color: #991B1B; margin: 16px 0;">
             <b>Diagnostic Note ({sel_date}):</b> {row.get('note', 'Sudden thermal/weather shift')}
         </div>
         """,
@@ -645,25 +631,25 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
         fig_day = go.Figure()
         fig_day.add_trace(go.Scatter(
             x=day_slice["ts"], y=day_slice["p90"], mode="lines",
-            line=dict(color=COLOR_PEAK, width=0),
+            line=dict(color="rgba(220, 38, 38, 0.4)", width=1),
             name="P90 Upper Bound", showlegend=False
         ))
         fig_day.add_trace(go.Scatter(
             x=day_slice["ts"], y=day_slice["p10"], mode="lines",
-            line=dict(color=COLOR_PEAK, width=0),
+            line=dict(color="rgba(220, 38, 38, 0.4)", width=1),
             fill="tonexty",
-            fillcolor="rgba(214, 69, 69, 0.20)",
+            fillcolor="rgba(254, 202, 202, 0.30)",
             name="P10–P90 Missed Range",
         ))
         fig_day.add_trace(go.Scatter(
             x=day_slice["ts"], y=day_slice["p50"], mode="lines",
             line=dict(dash="dash", color=COLOR_FORECAST, width=2.4),
-            name="P50 Forecast (Signal Blue)",
+            name="P50 Forecast",
         ))
         fig_day.add_trace(go.Scatter(
             x=day_slice["ts"], y=day_slice["actual"], mode="lines+markers",
-            line=dict(color=COLOR_ACTUAL, width=2.2),
-            marker=dict(size=6, color=COLOR_PEAK),
+            line=dict(color=COLOR_PEAK, width=2.4),
+            marker=dict(size=6, color=COLOR_PEAK, line=dict(color="#FFFFFF", width=1)),
             name="Actual Demand (Peak Surge)",
         ))
 
@@ -683,7 +669,7 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
 
 
 # ==============================================================================
-# TAB 5: PROCUREMENT COPILOT (Grid Green Savings & Navy/Slate Schedules)
+# TAB 5: PROCUREMENT COPILOT (Grid Green Savings & Sharp Schedule Lines)
 # ==============================================================================
 
 def render_procurement_tab(proc: dict) -> None:
@@ -739,23 +725,23 @@ def render_procurement_tab(proc: dict) -> None:
         st.markdown("**Hourly Schedule vs Actual Demand During Peak Summer Week (168 Hours)**")
         fig_sched = go.Figure()
 
-        # Flat naive schedule (Slate dotted line)
+        # Flat naive schedule (Slate dashed line)
         if "schedule_flat" in proc:
             flat_val = float(proc["schedule_flat"][0]) if isinstance(proc["schedule_flat"], list) else float(proc["schedule_flat"])
             fig_sched.add_trace(go.Scatter(
                 x=h_df["ts"], y=[flat_val] * len(h_df), mode="lines",
-                line=dict(color=COLOR_BASELINE, width=2, dash="dot"),
+                line=dict(color=COLOR_NAIVE, width=2, dash="dot"),
                 name="Naive Flat Schedule (Slate)",
             ))
 
-        # Dynamic P90 Schedule (Grid Green line)
+        # Dynamic P90 Schedule (Vibrant Grid Green)
         fig_sched.add_trace(go.Scatter(
             x=h_df["ts"], y=h_df["schedule_mw"], mode="lines",
-            line=dict(color=COLOR_SAVING, width=2.4),
+            line=dict(color=COLOR_SAVING, width=2.6),
             name="Dynamic P90 Schedule (Grid Green)",
         ))
 
-        # Actual Demand (Ink solid line)
+        # Actual Demand (Slate Ink solid line)
         fig_sched.add_trace(go.Scatter(
             x=h_df["ts"], y=h_df["actual_mw"], mode="lines",
             line=dict(color=COLOR_ACTUAL, width=2.2),
@@ -766,20 +752,20 @@ def render_procurement_tab(proc: dict) -> None:
             template="plotly_white",
             paper_bgcolor=COLOR_BG,
             plot_bgcolor=COLOR_BG,
-            height=360,
+            height=370,
             margin=dict(l=20, r=20, t=30, b=20),
             font=dict(family="Calibri, Inter, sans-serif", color=COLOR_PRIMARY),
             yaxis=dict(
                 title=dict(text="Load (MW)", font=dict(color=COLOR_PRIMARY, size=12)),
-                gridcolor="#EAEFF5",
-                linecolor=COLOR_BASELINE,
-                tickfont=dict(color=COLOR_PRIMARY, size=11),
+                gridcolor="#F1F5F9",
+                linecolor="#CBD5E1",
+                tickfont=dict(color=COLOR_BASELINE, size=11),
             ),
             xaxis=dict(
                 title=dict(text="Time (IST)", font=dict(color=COLOR_PRIMARY, size=12)),
-                gridcolor="#EAEFF5",
-                linecolor=COLOR_BASELINE,
-                tickfont=dict(color=COLOR_PRIMARY, size=11),
+                gridcolor="#F1F5F9",
+                linecolor="#CBD5E1",
+                tickfont=dict(color=COLOR_BASELINE, size=11),
             ),
             hovermode="x unified",
             legend=dict(
@@ -789,7 +775,7 @@ def render_procurement_tab(proc: dict) -> None:
                 xanchor="right",
                 x=1,
                 bgcolor="rgba(255, 255, 255, 0.95)",
-                bordercolor=COLOR_SURFACE,
+                bordercolor="#E2E8F0",
                 borderwidth=1,
                 font=dict(size=11, color=COLOR_PRIMARY),
             ),
