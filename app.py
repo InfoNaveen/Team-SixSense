@@ -351,19 +351,17 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
         height=460,
         margin=dict(l=24, r=24, t=36, b=24),
         xaxis=dict(
-            title="Time (IST)",
+            title=dict(text="Time (IST)", font=dict(color="#475569", size=12)),
             showgrid=True,
             gridcolor="#F1F5F9",
             linecolor="#E2E8F0",
-            titlefont=dict(color="#475569", size=12),
             tickfont=dict(color="#64748B", size=11),
         ),
         yaxis=dict(
-            title="Demand (MW)",
+            title=dict(text="Demand (MW)", font=dict(color="#475569", size=12)),
             showgrid=True,
             gridcolor="#F1F5F9",
             linecolor="#E2E8F0",
-            titlefont=dict(color="#475569", size=12),
             tickfont=dict(color="#64748B", size=11),
         ),
         hovermode="x unified",
@@ -502,8 +500,7 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
             tickfont=dict(color="#1E293B", size=12, weight="bold"),
         ),
         coloraxis_colorbar=dict(
-            title="MAE (MW)",
-            titlefont=dict(size=11, color="#475569"),
+            title=dict(text="MAE (MW)", font=dict(size=11, color="#475569")),
             tickfont=dict(size=10, color="#64748B"),
         ),
     )
