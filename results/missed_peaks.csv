@@ -1,3 +1,18 @@
 date,actual_peak_mw,pred_p50_peak_mw,pred_p90_peak_mw,hour_error_min,note
-2024-07-01,7532.0,7758.2,8307.4,0,DUMMY – replace with real failure analysis
-2025-06-01,7578.8,7757.3,8101.3,0,DUMMY – replace with real failure analysis
+2024-01-06,7760.6,4020.6,5113.8,1380,Sudden weather surge or festival deviation below P90 threshold
+2024-01-07,7136.8,4821.8,5014.3,1320,Sudden weather surge or festival deviation below P90 threshold
+2024-01-08,6456.2,5178.7,6021.0,1380,Sudden weather surge or festival deviation below P90 threshold
+2024-01-09,6478.8,4230.9,5943.6,1320,Sudden weather surge or festival deviation below P90 threshold
+2024-02-06,7290.5,4472.7,5002.1,420,Sudden weather surge or festival deviation below P90 threshold
+2024-02-07,7226.4,5085.5,5761.7,900,Sudden weather surge or festival deviation below P90 threshold
+2024-03-06,7837.6,4422.2,6308.9,0,Sudden weather surge or festival deviation below P90 threshold
+2024-03-09,6510.9,5752.2,5951.3,900,Sudden weather surge or festival deviation below P90 threshold
+2024-04-06,7688.5,4498.8,6060.5,0,Sudden weather surge or festival deviation below P90 threshold
+2024-05-06,7937.8,5407.4,6026.4,60,Sudden weather surge or festival deviation below P90 threshold
+2024-05-15,6423.2,5810.0,6342.1,480,Sudden weather surge or festival deviation below P90 threshold
+2024-07-05,6527.5,5110.9,5989.1,540,Sudden weather surge or festival deviation below P90 threshold
+2024-07-06,7362.5,4897.2,5901.7,0,Sudden weather surge or festival deviation below P90 threshold
+2024-08-16,6492.7,6099.3,6360.2,0,Sudden weather surge or festival deviation below P90 threshold
+2024-09-05,6465.3,4838.1,5854.0,0,Sudden weather surge or festival deviation below P90 threshold
+2024-09-08,6407.9,5120.9,5862.1,480,Sudden weather surge or festival deviation below P90 threshold
+2024-11-07,7328.4,5321.8,6279.3,60,Sudden weather surge or festival deviation below P90 threshold

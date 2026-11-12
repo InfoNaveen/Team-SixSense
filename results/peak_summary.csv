@@ -1,0 +1,2 @@
+threshold_mw,total_test_days,actual_peak_days,predicted_peak_days,precision_pct,recall_pct,f1_score,peak_hour_mae_min
+6373.6,347,84,103,65.05,79.76,0.717,343.0
