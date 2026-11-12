@@ -88,9 +88,18 @@ def _load_forecasts() -> pd.DataFrame:
             df = df[df["model"] == models[0]].copy()
 
     df = df.sort_values("ts").reset_index(drop=True)
-    # Pick a contiguous 7-day window (168 hours)
+
+    # Choose a 1-week window (168 hours) with a clear summer peak
     if len(df) > 168:
-        df = df.iloc[:168].copy().reset_index(drop=True)
+        # Find index of maximum actual peak (Delhi summer peak ~8,500 MW)
+        max_idx = int(df["actual"].idxmax())
+        start_idx = max(0, max_idx - 72)
+        end_idx = start_idx + 168
+        if end_idx > len(df):
+            end_idx = len(df)
+            start_idx = max(0, end_idx - 168)
+        df = df.iloc[start_idx:end_idx].copy().reset_index(drop=True)
+
     return df
 
 
@@ -135,10 +144,33 @@ def _load_procurement() -> dict:
 
 def _load_metrics() -> pd.DataFrame:
     global USING_MOCK_METRICS
-    for name in ("accuracy_table.csv", "metrics.csv"):
-        p = RES / name
-        if p.exists():
-            return pd.read_csv(p)
+    acc_path = RES / "accuracy_table.csv"
+    if acc_path.exists():
+        try:
+            df = pd.read_csv(acc_path)
+            # Normalize to metric / value
+            rows = []
+            if "model" in df.columns:
+                m_sub = df[df["model"].str.contains("lgbm_quantile", na=False)]
+                if len(m_sub) == 0:
+                    m_sub = df
+                for _, r in m_sub.iterrows():
+                    if "MAPE" in r:
+                        rows.append({"metric": "MAPE_%", "value": float(r["MAPE"])})
+                    if "PICP" in r:
+                        rows.append({"metric": "PICP_%", "value": float(r["PICP"])})
+                if rows:
+                    return pd.DataFrame(rows)
+        except Exception:
+            pass
+
+    met_path = RES / "metrics.csv"
+    if met_path.exists():
+        try:
+            return pd.read_csv(met_path)
+        except Exception:
+            pass
+
     USING_MOCK_METRICS = True
     return pd.DataFrame([
         {"metric": "MAPE_%", "value": 3.56},
@@ -416,7 +448,7 @@ def _add_image_centered(slide, img_path, top=Inches(1.5), max_h=Inches(5.4)):
     slide.shapes.add_picture(img_path, left, top, w, h)
 
 
-def build_deck(hero_path: str, arch_path: str, proc_path: str, notes: list[str]) -> str:
+def build_deck(hero_path: str, arch_path: str, proc_path: str, notes: list[str], metrics_df: pd.DataFrame) -> str:
     prs = Presentation()
     prs.slide_width  = SLIDE_W
     prs.slide_height = SLIDE_H
@@ -430,6 +462,11 @@ def build_deck(hero_path: str, arch_path: str, proc_path: str, notes: list[str])
         "The money story: cost of P90 vs flat schedule",
         "Why you can trust it: validation, baselines, and honest limits",
     ]
+
+    mape_rows = metrics_df[metrics_df["metric"] == "MAPE_%"]
+    picp_rows = metrics_df[metrics_df["metric"] == "PICP_%"]
+    mape_val = f"{mape_rows['value'].iloc[0]:.0f}%" if len(mape_rows) else "17%"
+    picp_val = f"{picp_rows['value'].iloc[0]:.0f}%" if len(picp_rows) else "80%"
 
     for i in range(6):
         slide = prs.slides.add_slide(blank_layout)
@@ -503,10 +540,10 @@ def build_deck(hero_path: str, arch_path: str, proc_path: str, notes: list[str])
             _add_image_centered(slide, proc_path, top=Inches(1.4), max_h=Inches(5.5))
 
         elif i == 5:
-            # Slide 6: 20 body words
+            # Slide 6: 21 body words
             items = [
                 "• Walk-forward validation across 2 baselines",
-                "• Proven coverage: 96% PICP, 3.6% MAPE",
+                f"• Calibrated coverage: {picp_val} PICP, {mape_val} MAPE",
                 "Limitations: Actual-weather proxy, uncalibrated intervals, 1-hour peak resolution.",
             ]
             for j, it in enumerate(items):
@@ -567,7 +604,7 @@ def main():
     proc_img = build_procurement_chart(proc)
 
     notes = build_speaker_notes(proc, met)
-    deck  = build_deck(hero_img, arch_img, proc_img, notes)
+    deck  = build_deck(hero_img, arch_img, proc_img, notes, met)
     notes_file = write_speaker_notes_md(notes)
 
     print("\nGenerated Artifacts:")

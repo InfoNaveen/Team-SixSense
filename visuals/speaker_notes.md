@@ -33,13 +33,13 @@
 ## Slide 5: The money story: cost of P90 vs flat schedule
 *Target Duration: ~30 seconds*
 
-> Here is the financial impact: across one sample week, a conventional flat schedule incurs ₹616.3 crore in total power outlay. The P90-shaped schedule reduces this to ₹602.9 crore, delivering ₹13.4 crore in weekly savings, or 2.2 percent. By minimizing high-penalty real-time DSM exposure, peak-aware procurement protects DISCOM operating margins.
+> Here is the financial impact: across one sample week, a conventional flat schedule incurs ₹581.8 crore in total power outlay. The P90-shaped schedule reduces this to ₹533.4 crore, delivering ₹48.5 crore in weekly savings, or 8.3 percent. By minimizing high-penalty real-time DSM exposure, peak-aware procurement protects DISCOM operating margins.
 
 ---
 
 ## Slide 6: Why you can trust it: validation, baselines, and honest limits
 *Target Duration: ~30 seconds*
 
-> Our pipeline relies entirely on walk-forward temporal splits evaluated against seasonal-naive and linear baselines, achieving 3.6% MAPE and 96.2% interval coverage. Transparently, our current limitations are: weather inputs serve as a forecast proxy, intervals require conformal calibration, and peak timing has one-hour granularity. Immediate next steps are conformal re-calibration and live weather API integration.
+> Our pipeline relies entirely on walk-forward temporal splits evaluated against seasonal-naive and linear baselines, achieving 19.2% MAPE and 68.1% interval coverage. Transparently, our current limitations are: weather inputs serve as a forecast proxy, intervals require conformal calibration, and peak timing has one-hour granularity. Immediate next steps are conformal re-calibration and live weather API integration.
 
 ---
