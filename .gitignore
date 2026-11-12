@@ -4,6 +4,7 @@
 
 # ----- Competition PDFs (excluded from repo) -----
 *.pdf
+*.png
 
 # ----- Python -----
 __pycache__/
