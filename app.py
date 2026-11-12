@@ -4,6 +4,7 @@ app.py — Delhi DISCOM Load Forecasting & Procurement Copilot Dashboard
 Reads results/ files ONLY. Never imports models/, features/, or data/.
 Runs 100% offline.
 
+Theme: Modern Light UI/UX with soft corporate palette and accessible contrast.
 Launch:
     streamlit run app.py
 """
@@ -22,14 +23,153 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+# Configure wide layout and page metadata
 st.set_page_config(
     page_title="Delhi DISCOM Copilot",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 REPO_ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = REPO_ROOT / "results"
+
+# ==============================================================================
+# LIGHT THEME CUSTOM CSS
+# ==============================================================================
+
+CUSTOM_LIGHT_CSS = """
+<style>
+/* Main app background & font settings */
+.stApp {
+    background-color: #F8FAFC !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* Sidebar styling */
+section[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-right: 1px solid #E2E8F0 !important;
+}
+
+section[data-testid="stSidebar"] h1, 
+section[data-testid="stSidebar"] h2, 
+section[data-testid="stSidebar"] h3 {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+}
+
+/* KPI Metric Cards */
+div[data-testid="stMetric"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+div[data-testid="stMetric"]:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    border-color: #CBD5E1 !important;
+}
+
+div[data-testid="stMetricLabel"] p {
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #64748B !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 4px !important;
+}
+
+div[data-testid="stMetricValue"] div {
+    font-size: 1.65rem !important;
+    font-weight: 700 !important;
+    color: #0F172A !important;
+}
+
+div[data-testid="stMetricDelta"] {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+}
+
+/* Modern Tab Navigation */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px !important;
+    background-color: transparent !important;
+    border-bottom: 2px solid #E2E8F0 !important;
+    padding-bottom: 2px !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 44px !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 8px 18px !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    color: #64748B !important;
+    background-color: transparent !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    color: #2563EB !important;
+    background-color: #F1F5F9 !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #EFF6FF !important;
+    color: #2563EB !important;
+    border-bottom: 3px solid #2563EB !important;
+}
+
+/* Card containers */
+.light-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Hero Header */
+.hero-header {
+    background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+    border: 1px solid #DBEAFE;
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.04);
+}
+
+.badge-tag {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.badge-blue { background-color: #DBEAFE; color: #1D4ED8; }
+.badge-green { background-color: #DCFCE7; color: #15803D; }
+.badge-amber { background-color: #FEF3C7; color: #B45309; }
+
+/* Dataframe & Tables */
+div[data-testid="stDataFrame"] {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+</style>
+"""
+
+st.markdown(CUSTOM_LIGHT_CSS, unsafe_allow_html=True)
 
 
 # ==============================================================================
@@ -98,7 +238,7 @@ def load_procurement() -> dict[str, Any]:
 
 
 # ==============================================================================
-# TAB 1: FORECAST (Hero Chart with P10-P90 Band and Peak Markers)
+# TAB 1: FORECAST (Hero Chart with P10–P90 Band and Peak Markers)
 # ==============================================================================
 
 def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str) -> None:
@@ -110,13 +250,16 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
 
     work = df.copy().sort_values("ts")
 
-    c1, c2 = st.columns(2)
+    c1, c2 = st.columns([1, 1])
     models = sorted(work["model"].dropna().unique().tolist())
     def_idx = 0
     for i, m in enumerate(models):
-        if "lgbm" in m:
+        if "calibrated" in m:
             def_idx = i
             break
+        elif "lgbm" in m:
+            def_idx = i
+
     sel_model = c1.selectbox("Forecast Model", models, index=def_idx, key=f"sel_model_{horizon}")
     work = work[work["model"] == sel_model]
 
@@ -133,21 +276,39 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
     k1, k2, k3 = st.columns(3)
     k1.metric("Peak Observed Load", f"{peak_act:,.0f} MW")
     k2.metric("Point Forecast RMSE", f"{rmse:,.1f} MW")
-    k3.metric("Empirical PICP (Target 80%)", f"{inside_band:.1f}%")
+    picp_delta = f"{inside_band - 80.0:+.1f}% vs 80% Target"
+    k3.metric("Empirical PICP (P10–P90)", f"{inside_band:.1f}%", picp_delta)
 
+    # Plotly Light Hero Chart
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=work["ts"], y=work["p90"], mode="lines", line=dict(width=0), name="P90", showlegend=False))
+
+    # P90 upper bound line (invisible, sets upper bound for tonexty)
     fig.add_trace(go.Scatter(
-        x=work["ts"], y=work["p10"], mode="lines", line=dict(width=0),
-        fill="tonexty", fillcolor="rgba(37, 99, 235, 0.22)", name="P10–P90 Uncertainty Band",
+        x=work["ts"], y=work["p90"], mode="lines",
+        line=dict(width=0), name="P90 Upper Bound", showlegend=False
     ))
+
+    # P10 lower bound line with soft sky-blue fill
+    fig.add_trace(go.Scatter(
+        x=work["ts"], y=work["p10"], mode="lines",
+        line=dict(width=0),
+        fill="tonexty",
+        fillcolor="rgba(59, 130, 246, 0.16)",
+        name="P10–P90 Uncertainty Band (80%)",
+    ))
+
+    # P50 point forecast (royal blue dashed line)
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["p50"], mode="lines",
-        line=dict(color="#1d4ed8", width=2, dash="dash"), name="P50 Expected Load",
+        line=dict(color="#2563EB", width=2, dash="dash"),
+        name="P50 Expected Demand",
     ))
+
+    # Actual demand (crisp dark slate line)
     fig.add_trace(go.Scatter(
         x=work["ts"], y=work["actual"], mode="lines",
-        line=dict(color="#111827", width=2), name="Actual Demand (MW)",
+        line=dict(color="#0F172A", width=2.2),
+        name="Actual Grid Demand (MW)",
     ))
 
     # Peak markers
@@ -159,33 +320,64 @@ def render_forecast_tab(df: pd.DataFrame, peak_flags: pd.DataFrame, horizon: str
 
         pred_peaks = pf[pf["peak_pred"].astype(bool)]
         if not pred_peaks.empty:
-            merged = work.merge(pred_peaks[["date_str", "peak_hour_pred", "peak_prob"]],
-                                left_on=["date_str", "hour"], right_on=["date_str", "peak_hour_pred"], how="inner")
+            merged = work.merge(
+                pred_peaks[["date_str", "peak_hour_pred", "peak_prob"]],
+                left_on=["date_str", "hour"], right_on=["date_str", "peak_hour_pred"], how="inner"
+            )
             if not merged.empty:
                 fig.add_trace(go.Scatter(
                     x=merged["ts"], y=merged["p90"], mode="markers",
-                    marker=dict(color="#f59e0b", size=10, symbol="triangle-up"),
+                    marker=dict(color="#D97706", size=10, symbol="triangle-up", line=dict(color="#FFFFFF", width=1.5)),
                     name="Predicted Peak Hour",
                 ))
 
         actual_peaks = pf[pf["peak_actual"].astype(bool)]
         if not actual_peaks.empty:
-            merged_act = work.merge(actual_peaks[["date_str", "peak_hour_actual"]],
-                                    left_on=["date_str", "hour"], right_on=["date_str", "peak_hour_actual"], how="inner")
+            merged_act = work.merge(
+                actual_peaks[["date_str", "peak_hour_actual"]],
+                left_on=["date_str", "hour"], right_on=["date_str", "peak_hour_actual"], how="inner"
+            )
             if not merged_act.empty:
                 fig.add_trace(go.Scatter(
                     x=merged_act["ts"], y=merged_act["actual"], mode="markers",
-                    marker=dict(color="#dc2626", size=9, symbol="star"),
-                    name="Actual Peak Event (>90th percentile)",
+                    marker=dict(color="#DC2626", size=9, symbol="star", line=dict(color="#FFFFFF", width=1)),
+                    name="Actual Peak Event (>90th %ile)",
                 ))
 
     fig.update_layout(
-        height=450,
-        margin=dict(l=20, r=20, t=30, b=20),
-        xaxis_title="Time (IST)",
-        yaxis_title="Load (MW)",
+        template="plotly_white",
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        height=460,
+        margin=dict(l=24, r=24, t=36, b=24),
+        xaxis=dict(
+            title="Time (IST)",
+            showgrid=True,
+            gridcolor="#F1F5F9",
+            linecolor="#E2E8F0",
+            titlefont=dict(color="#475569", size=12),
+            tickfont=dict(color="#64748B", size=11),
+        ),
+        yaxis=dict(
+            title="Demand (MW)",
+            showgrid=True,
+            gridcolor="#F1F5F9",
+            linecolor="#E2E8F0",
+            titlefont=dict(color="#475569", size=12),
+            tickfont=dict(color="#64748B", size=11),
+        ),
         hovermode="x unified",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="rgba(255, 255, 255, 0.9)",
+            bordercolor="#E2E8F0",
+            borderwidth=1,
+            font=dict(size=11, color="#334155"),
+        ),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -203,19 +395,61 @@ def render_accuracy_tab(metrics: pd.DataFrame, horizon: str) -> None:
     m_sub = metrics[metrics["horizon"] == horizon].copy()
     avg_metrics = m_sub.groupby(["model", "metric"], as_index=False)["value"].mean()
     pivoted = avg_metrics.pivot(index="model", columns="metric", values="value").round(2)
+
     st.dataframe(pivoted, use_container_width=True)
 
-    # Bar chart comparing MAPE & RMSE
+    # Bar charts comparing MAPE & RMSE in clean light colors
     piv_reset = pivoted.reset_index()
     if "MAPE" in piv_reset.columns and "RMSE" in piv_reset.columns:
         c1, c2 = st.columns(2)
+
+        color_map = {
+            "lgbm_quantile": "#2563EB",            # Royal blue
+            "lgbm_quantile_calibrated": "#059669", # Emerald green
+            "linear_regression": "#6366F1",        # Indigo
+            "seasonal_naive": "#94A3B8",           # Cool slate
+        }
+
         with c1:
-            fig_mape = px.bar(piv_reset, x="model", y="MAPE", color="model", title="MAPE (%) — Lower is better")
-            fig_mape.update_layout(showlegend=False, height=320)
+            fig_mape = px.bar(
+                piv_reset, x="model", y="MAPE",
+                color="model",
+                color_discrete_map=color_map,
+                title="<b>MAPE (%)</b> — Lower is better",
+                text="MAPE",
+            )
+            fig_mape.update_traces(texttemplate="%{text:.2f}%", textposition="outside")
+            fig_mape.update_layout(
+                template="plotly_white",
+                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#FFFFFF",
+                showlegend=False,
+                height=340,
+                margin=dict(l=20, r=20, t=40, b=20),
+                xaxis=dict(title="", tickfont=dict(size=11, color="#334155")),
+                yaxis=dict(title="MAPE (%)", gridcolor="#F1F5F9", tickfont=dict(color="#64748B")),
+            )
             st.plotly_chart(fig_mape, use_container_width=True)
+
         with c2:
-            fig_rmse = px.bar(piv_reset, x="model", y="RMSE", color="model", title="RMSE (MW) — Lower is better")
-            fig_rmse.update_layout(showlegend=False, height=320)
+            fig_rmse = px.bar(
+                piv_reset, x="model", y="RMSE",
+                color="model",
+                color_discrete_map=color_map,
+                title="<b>RMSE (MW)</b> — Lower is better",
+                text="RMSE",
+            )
+            fig_rmse.update_traces(texttemplate="%{text:.1f}", textposition="outside")
+            fig_rmse.update_layout(
+                template="plotly_white",
+                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#FFFFFF",
+                showlegend=False,
+                height=340,
+                margin=dict(l=20, r=20, t=40, b=20),
+                xaxis=dict(title="", tickfont=dict(size=11, color="#334155")),
+                yaxis=dict(title="RMSE (MW)", gridcolor="#F1F5F9", tickfont=dict(color="#64748B")),
+            )
             st.plotly_chart(fig_rmse, use_container_width=True)
 
 
@@ -244,15 +478,45 @@ def render_heatmap_tab(df: pd.DataFrame) -> None:
         [s for s in season_order if s in f_sub["season"].unique()]
     )
 
+    # Clean light pastel color scale for heatmap
     fig = px.imshow(
         heat,
         labels=dict(x="Hour of Day (IST)", y="Season", color="MAE (MW)"),
         color_continuous_scale="YlOrRd",
         aspect="auto",
     )
-    fig.update_layout(height=400, margin=dict(l=20, r=20, t=30, b=20))
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        height=380,
+        margin=dict(l=20, r=20, t=30, b=20),
+        xaxis=dict(
+            tickmode="linear",
+            tick0=0,
+            dtick=2,
+            gridcolor="#F8FAFC",
+            tickfont=dict(color="#475569", size=11),
+        ),
+        yaxis=dict(
+            tickfont=dict(color="#1E293B", size=12, weight="bold"),
+        ),
+        coloraxis_colorbar=dict(
+            title="MAE (MW)",
+            titlefont=dict(size=11, color="#475569"),
+            tickfont=dict(size=10, color="#64748B"),
+        ),
+    )
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Error spikes occur during summer evening hours (19:00 - 23:00 IST) due to cooling demand swings.")
+
+    st.markdown(
+        """
+        <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #92400E;">
+            <b>Operational Insight:</b> Error spikes visibly concentrate in Summer (MAMJ) evening hours (19:00 – 23:00 IST), driven by non-linear residential air-conditioning saturation and nocturnal heat trapping.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # ==============================================================================
@@ -278,7 +542,14 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
     k3.metric("Predicted P90", f"{row['pred_p90_peak_mw']:,.0f} MW")
     k4.metric("Timing Error", f"{row['hour_error_min']:,.0f} min")
 
-    st.info(f"**Failure Analysis Note ({sel_date})**: {row.get('note', 'Sudden thermal/weather shift')}")
+    st.markdown(
+        f"""
+        <div style="background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #1E40AF; margin: 16px 0;">
+            <b>Diagnostic Note ({sel_date}):</b> {row.get('note', 'Sudden thermal/weather shift')}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Zoom in on that day
     f_sub = df.copy()
@@ -288,15 +559,42 @@ def render_missed_peaks_tab(missed: pd.DataFrame, df: pd.DataFrame) -> None:
         pref = [m for m in day_slice["model"].unique() if "lgbm" in m]
         if pref:
             day_slice = day_slice[day_slice["model"] == pref[0]]
+
         fig_day = go.Figure()
-        fig_day.add_trace(go.Scatter(x=day_slice["ts"], y=day_slice["p90"], mode="lines", line=dict(width=0), name="P90"))
         fig_day.add_trace(go.Scatter(
-            x=day_slice["ts"], y=day_slice["p10"], mode="lines", line=dict(width=0),
-            fill="tonexty", fillcolor="rgba(239, 68, 68, 0.2)", name="P10–P90 Range"
+            x=day_slice["ts"], y=day_slice["p90"], mode="lines",
+            line=dict(width=0), name="P90 Upper Bound", showlegend=False
         ))
-        fig_day.add_trace(go.Scatter(x=day_slice["ts"], y=day_slice["p50"], mode="lines", line=dict(dash="dash", color="#2563eb"), name="P50"))
-        fig_day.add_trace(go.Scatter(x=day_slice["ts"], y=day_slice["actual"], mode="lines+markers", line=dict(color="#dc2626"), name="Actual Demand"))
-        fig_day.update_layout(height=320, margin=dict(l=20, r=20, t=20, b=20), yaxis_title="Load (MW)")
+        fig_day.add_trace(go.Scatter(
+            x=day_slice["ts"], y=day_slice["p10"], mode="lines",
+            line=dict(width=0),
+            fill="tonexty",
+            fillcolor="rgba(239, 68, 68, 0.16)",
+            name="P10–P90 Range (Missed Band)",
+        ))
+        fig_day.add_trace(go.Scatter(
+            x=day_slice["ts"], y=day_slice["p50"], mode="lines",
+            line=dict(dash="dash", color="#2563EB", width=2),
+            name="P50 Expected Demand",
+        ))
+        fig_day.add_trace(go.Scatter(
+            x=day_slice["ts"], y=day_slice["actual"], mode="lines+markers",
+            line=dict(color="#DC2626", width=2.5),
+            marker=dict(size=5, color="#DC2626"),
+            name="Actual Demand (Peak Surge)",
+        ))
+
+        fig_day.update_layout(
+            template="plotly_white",
+            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#FFFFFF",
+            height=340,
+            margin=dict(l=20, r=20, t=24, b=20),
+            yaxis_title="Load (MW)",
+            xaxis_title="Time of Day (IST)",
+            hovermode="x unified",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        )
         st.plotly_chart(fig_day, use_container_width=True)
 
 
@@ -312,45 +610,143 @@ def render_procurement_tab(proc: dict) -> None:
 
     c_p90 = proc.get("cost_p90", proc.get("cost_model", 0.0)) / 1e7
     c_flat = proc.get("cost_flat", 0.0) / 1e7
+    c_p50 = proc.get("cost_p50", 0.0) / 1e7
     saving = proc.get("saving_p90_vs_flat", proc.get("saving", 0.0)) / 1e7
     pct = proc.get("saving_pct", proc.get("saving_pct_vs_flat", 0.0))
     exposure = proc.get("p90_exposure_mw", 0.0)
 
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("P90 Dynamic Schedule Cost", f"Rs {c_p90:,.2f} Cr")
-    k2.metric("Naive Flat Schedule Cost", f"Rs {c_flat:,.2f} Cr")
-    k3.metric("Simulated Weekly Savings", f"Rs {saving:,.2f} Cr", f"{pct:.2f}% vs Flat")
-    k4.metric("Max P90 Risk Exposure", f"{exposure:,.1f} MW")
-
-    st.info(
-        "**Marked Tariff Assumptions**: Contracted = Rs 5.00/kWh | "
-        "DSM Penalty Rate = Rs 12.00/kWh | Stranded Surplus Loss = Rs 2.50/kWh"
+    # Hero Rupee Savings Banner (Soft Green Light Theme)
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%); border: 1px solid #A7F3D0; border-radius: 12px; padding: 20px 24px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);">
+            <div style="font-size: 12px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Representative Summer Peak Week Savings (Fold 6)</div>
+            <div style="font-size: 32px; font-weight: 800; color: #065F46; line-height: 1.2;">
+                ₹{saving:,.2f} Crore 
+                <span style="font-size: 18px; font-weight: 600; color: #059669; margin-left: 8px;">(+{pct:.2f}% Cost Reduction vs Naive Flat)</span>
+            </div>
+            <div style="font-size: 13px; color: #047857; margin-top: 6px;">
+                Dynamic P90 scheduling prevents unhedged exposure to punitive ₹12.00/kWh DSM penalties while avoiding excess stranded capacity.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    # Hourly procurement breakdown or sensitivity
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("P90 Dynamic Schedule Cost", f"₹{c_p90:,.2f} Cr")
+    k2.metric("P50 Median Schedule Cost", f"₹{c_p50:,.2f} Cr")
+    k3.metric("Naive Flat Schedule Cost", f"₹{c_flat:,.2f} Cr")
+    k4.metric("Max P90 Risk Exposure", f"{exposure:,.1f} MW")
+
+    st.markdown(
+        """
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px 16px; border-radius: 8px; font-size: 12px; color: #64748B; margin: 16px 0;">
+            <b>Marked Tariff Assumptions:</b> Base Contracted Rate = ₹5.00/kWh | DSM Shortfall Penalty = ₹12.00/kWh | Stranded Surplus Loss = ₹2.50/kWh
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Hourly detail chart if present
+    if "hourly_detail_p90" in proc and len(proc["hourly_detail_p90"]) > 0:
+        h_df = pd.DataFrame(proc["hourly_detail_p90"])
+        h_df["ts"] = pd.to_datetime(h_df["ts"])
+
+        st.markdown("**Hourly Schedule vs Actual Demand During Peak Summer Week (168 Hours)**")
+        fig_sched = go.Figure()
+
+        # Flat naive schedule
+        if "schedule_flat" in proc:
+            flat_val = float(proc["schedule_flat"][0]) if isinstance(proc["schedule_flat"], list) else float(proc["schedule_flat"])
+            fig_sched.add_trace(go.Scatter(
+                x=h_df["ts"], y=[flat_val] * len(h_df), mode="lines",
+                line=dict(color="#94A3B8", width=1.8, dash="dot"),
+                name="Naive Flat Schedule (Mean P90)",
+            ))
+
+        # Dynamic P90 Schedule
+        fig_sched.add_trace(go.Scatter(
+            x=h_df["ts"], y=h_df["schedule_mw"], mode="lines",
+            line=dict(color="#2563EB", width=2.2),
+            name="Dynamic P90 Schedule (Contracted)",
+        ))
+
+        # Actual Demand
+        fig_sched.add_trace(go.Scatter(
+            x=h_df["ts"], y=h_df["actual_mw"], mode="lines",
+            line=dict(color="#0F172A", width=2),
+            name="Actual Demand (MW)",
+        ))
+
+        fig_sched.update_layout(
+            template="plotly_white",
+            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#FFFFFF",
+            height=360,
+            margin=dict(l=20, r=20, t=30, b=20),
+            yaxis_title="Load (MW)",
+            xaxis_title="Time (IST)",
+            hovermode="x unified",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        )
+        st.plotly_chart(fig_sched, use_container_width=True)
+
+    # Sensitivity Table
     if "sensitivity_table" in proc:
-        st.markdown("**Tariff Sensitivity Analysis (DSM vs Stranded Rates)**")
+        st.markdown("**Tariff Sensitivity Analysis (DSM vs Stranded Waste Rates)**")
         sens_df = pd.DataFrame(proc["sensitivity_table"])
         st.dataframe(sens_df, use_container_width=True, hide_index=True)
 
 
 # ==============================================================================
-# MAIN APP
+# MAIN APP ENTRYPOINT
 # ==============================================================================
 
 def main():
-    st.title("Delhi DISCOM: Probabilistic Peak-Aware Forecasting & Procurement Copilot")
-    st.caption("CodeSpark 2026 | Offline Operational Dashboard reading results/ only")
+    # Hero Top Header
+    st.markdown(
+        """
+        <div class="hero-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <span class="badge-tag badge-blue">Delhi DISCOM</span>
+                        <span class="badge-tag badge-green">● Operational Copilot</span>
+                        <span class="badge-tag badge-amber">CodeSpark 2026</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 0;">
+                        Probabilistic Peak-Aware Load Forecasting & Procurement Copilot
+                    </div>
+                    <div style="font-size: 13px; color: #64748B; margin-top: 4px;">
+                        Hourly P10/P50/P90 Quantile Trajectories • Walk-Forward Calibration • Risk-Optimized Power Procurement
+                    </div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
-        st.header("Settings")
-        horizon = st.radio("Forecast Horizon", ["day", "week"], index=0, format_func=lambda h: "Day-Ahead (24h)" if h == "day" else "Week-Ahead (168h)")
+        st.markdown("### ⚙️ **Control Deck**")
+        horizon = st.radio(
+            "Forecast Horizon",
+            ["day", "week"],
+            index=0,
+            format_func=lambda h: "Day-Ahead (24h)" if h == "day" else "Week-Ahead (168h)"
+        )
+
         st.divider()
-        st.markdown("**Data Contracts Status**")
+        st.markdown("### 📋 **Contract Interfaces**")
         for f in ["forecasts_day.csv", "forecasts_week.csv", "metrics.csv", "peak_flags.csv", "missed_peaks.csv", "procurement_week.json"]:
             p = RESULTS_DIR / f
-            status = "FOUND" if p.exists() else "MISSING"
-            st.caption(f"• `{f}`: {status}")
+            if p.exists():
+                st.markdown(f"<div style='font-size: 12px; margin-bottom: 4px;'><span style='color: #10B981; font-weight: bold;'>✓</span> <code>{f}</code></div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div style='font-size: 12px; margin-bottom: 4px;'><span style='color: #EF4444; font-weight: bold;'>✗</span> <code>{f}</code></div>", unsafe_allow_html=True)
+
+        st.divider()
+        st.caption("🔒 Offline dashboard reading `results/` only.")
 
     forecasts_df = load_forecasts(horizon)
     metrics_df = load_metrics()
@@ -380,4 +776,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
