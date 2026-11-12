@@ -103,3 +103,4 @@ print(f"  Check G: [{status_g}]")
 print("\n--- Leakage Plausibility Check ---")
 print(f"Minimum MAPE observed: {min(day_mape, week_mape):.2f}% (healthy range 15%-25%, no target leakage)")
 print("  Leakage check: [PASS]")
+

@@ -85,3 +85,4 @@
 3. **Target Leakage Prohibition**: Raw calendar index columns (`year`, `month`, `day`, `hour`, `minute`) and moving target averages (`moving_avg_3`) are strictly barred from the feature matrix.
 4. **Quantile Crossing Resolution**: The LightGBM quantile models enforce strict monotonicity ($P_{10} \le P_{50} \le P_{90}$) via post-prediction sorting.
 5. **Dashboard Isolation**: `app.py` reads exclusively from `results/` artifacts and never imports modeling, feature, or training logic.
+

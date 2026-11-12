@@ -62,3 +62,4 @@ print("\nJune-August Coverage (Summer Peaks):")
 for p_str, exp, act, diff in june_aug:
     pct = (act / exp) * 100 if exp > 0 else 0
     print(f"  {p_str}: {act:,} / {exp:,} rows ({pct:.1f}% present, {diff:,} missing)")
+
