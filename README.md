@@ -1,45 +1,57 @@
-# Probabilistic Peak-Aware Load Forecasting & Procurement Copilot (Delhi DISCOM)
+# Probabilistic Peak-Aware Load Forecasting & Procurement Copilot for Delhi's DISCOM
 
-CodeSpark 2026 | Domain 4 PS 2 | Team of 4
+**CodeSpark 2026** · 12-Hour Hackathon · Team of 4
 
-## Overview
-An end-to-end, leakage-free probabilistic load forecasting and day-ahead/week-ahead power procurement copilot for Delhi's DISCOM:
-- **Hourly P10 / P50 / P90 load forecasts** for Day-Ahead (24h) and Week-Ahead (168h) horizons.
-- **Peak-event classifier** flagging top-decile peak days and expected peak hour.
-- **Walk-forward (rolling-origin) backtest** across the last 12 monthly blocks (zero random splits).
-- **Procurement advisor** converting P90 intervals into an hourly buy schedule and quantifying rupee savings vs. a naive flat schedule.
-- **Offline Streamlit + Plotly dashboard** reading solely from `results/`.
+An end-to-end, peak-aware probabilistic electricity demand forecasting and procurement optimization system for Delhi's electricity distribution companies (DISCOMs).
 
-## Strict Folder Ownership
-| Role | Owns | Hands off to |
-| --- | --- | --- |
-| **Lead (P1)** | `procurement/`, `docs/`, `integration/`, `pitch/`, `results/procurement_week.json` | Everyone (contracts, integration, memo, card, pitch) |
-| **Data & Dashboard (P2)** | `data/`, `app/` | Features (`data/clean_hourly.parquet`), Lead (dashboard) |
-| **Features & Eval (P3)** | `features/`, `eval/`, `results/metrics.csv`, `results/missed_peaks.csv` | Modeling (features + harness), Dashboard & Lead |
-| **Modeling (P4)** | `models/`, `results/forecasts_*.parquet`, `results/peak_flags.parquet` | Dashboard & Lead |
+---
 
-See [docs/interface_contracts.md](docs/interface_contracts.md) for the locked schemas and checkpoints.
+## Quick Start
 
-## Quickstart (Fresh Clone)
 ```bash
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# 1. Validate whatever contract artifacts exist so far
-python integration/validate_contracts.py --mode available
+# 2. Check teammate contracts status
+python scripts/check_contracts.py
 
-# 2. Run procurement simulation on dummy stub data (before H6 real forecasts exist)
-python -m procurement.procurement --dummy --out results/procurement_week.json
+# 3. Test procurement engine with dummy forecasts
+python stubs/test_procurement_smoke.py
 
-# 3. Run full integration pipeline (once Data, Features, and Modeling modules are ready)
-python integration/run_pipeline.py
+# 4. Run full pipeline (runs whatever modules teammates have delivered)
+python run_all.py
 
-# 4. Launch dashboard (Data/P2 owns app/app.py)
+# 5. Launch Streamlit dashboard
 streamlit run app/app.py
 ```
 
-## Key Assumptions
-- **Forecast origin**: 09:00 IST on D-1 (day-ahead covers 24h of day D; week-ahead covers 168h from 00:00 of day D).
-- **Cooling-degree-hours (CDH) base**: 25 °C.
-- **Peak day definition**: Daily maximum load > 90th percentile of daily maxima in the training window only.
-- **Procurement cost rates (marked assumptions)**: Contracted day-ahead Rs 5.0/kWh; DSM shortfall Rs 12.0/kWh; stranded surplus Rs 2.5/kWh.
+---
+
+## Documentation
+
+Comprehensive project documentation is available in [`docs/`](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/):
+
+- [docs/README.md](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/README.md) — Architecture, contracts, pipeline overview, and directory structure.
+- [docs/assumptions.md](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/assumptions.md) — Complete list of all operational and modeling assumptions (CDH base 25°C, 09:00 D-1 origin, rate cards, etc.).
+- [docs/model_card.md](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/model_card.md) — Model card documenting data, quantile regression setup, evaluation, and limitations.
+- [docs/pitch_outline.md](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/pitch_outline.md) — 5-minute timed pitch script with slides and demo cues for the hackathon judges.
+- [docs/failure_analysis_template.md](file:///c:/Users/Naveen%20Patil/OneDrive/Documents/DISCOM/docs/failure_analysis_template.md) — Honest post-hoc failure analysis framework for missed peak demand days.
+
+---
+
+## Team Ownership & Architecture
+
+Strict folder ownership ensures zero merge conflicts:
+
+| Folder | Owner | Role & Deliverables |
+|---|---|---|
+| `procurement/` | **Lead** | Procurement cost simulation (`simulate_week`), weekly optimizer |
+| `docs/` | **Lead** | Model card, assumptions, failure analysis, pitch outline |
+| Root & `scripts/` | **Lead** | `run_all.py`, contract validator, stubs, integration harness |
+| `data/` | **Data (P2)** | Data ingestion, cleaning (`clean_hourly.parquet`), calendar flags |
+| `features/` | **Features (P3)** | Feature matrix generation (`build_features`), weather/load lags |
+| `eval/` | **Features (P3)** | Expanding-window walk-forward backtest (`get_folds`, `run_backtest`) |
+| `models/` | **Modeling (P4)** | Quantile LightGBM models (`fit_predict` for p10/p50/p90), peak classifier |
+| `app/` | **Data (P2)** | Streamlit dashboard (reads `results/` only) |
+| `results/` | **Shared** | Contractual parquet, CSV, and JSON deliverables |
 

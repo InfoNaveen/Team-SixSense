@@ -1,0 +1,36 @@
+# ============================================================
+# CodeSpark 2026 — DISCOM project .gitignore
+# ============================================================
+
+# ----- Competition PDFs (excluded from repo) -----
+*.pdf
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ----- Virtual environments -----
+.venv/
+venv/
+env/
+
+# ----- Data files (raw / interim) -----
+data/*.csv
+data/raw/
+
+# ----- IDE / OS -----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ----- Jupyter -----
+.ipynb_checkpoints/
