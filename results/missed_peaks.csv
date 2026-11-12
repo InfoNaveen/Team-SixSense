@@ -1,0 +1,3 @@
+date,actual_peak_mw,pred_p50_peak_mw,pred_p90_peak_mw,hour_error_min,note
+2024-07-01,7532.0,7758.2,8307.4,0,DUMMY – replace with real failure analysis
+2025-06-01,7578.8,7757.3,8101.3,0,DUMMY – replace with real failure analysis
