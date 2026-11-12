@@ -1,0 +1,12 @@
+# Core team stack (exact matched versions for reproducibility)
+lightgbm==4.7.0
+pandas==3.0.6
+numpy==2.5.3
+scikit-learn==1.9.1
+scipy==1.18.1
+pyarrow==26.0.1
+
+# Dashboard & visualization
+streamlit>=1.40.0
+plotly>=5.24.0
+
