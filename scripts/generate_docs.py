@@ -288,3 +288,4 @@ Because single-point deterministic forecasts systematically underestimate these 
 with open(DOCS_DIR / "why_peaks_are_hard.md", "w", encoding="utf-8") as f:
     f.write(why_peaks_content)
 print("Updated docs/why_peaks_are_hard.md from new result files")
+
